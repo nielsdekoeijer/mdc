@@ -1,35 +1,32 @@
-const std = @import("std");
 const python = @cImport({
     @cDefine("Py_LIMITED_API", "3");
     @cInclude("Python.h");
 });
 
-// TODO:
-// * finalize upsampler
-// * downsampler
-// * arithmatic coder
-// * arithmatic decoder
-// * entropy coder
-// * entropy decoder
-// * dpcm coder
-// * dpcm decoder
-// * interleaver
-// * deinterleaver
-// * gain encoder
-// * gain decoder
-// * noise shaping filter
-
-const upsample_pybind = @import("upsample_pybind.zig").upsample_pybind;
-var methods = [_]python.PyMethodDef{
+pub const upsample_pybind = @import("upsample_pybind.zig").upsample_pybind;
+pub const downsample_pybind = @import("downsample_pybind.zig").downsample_pybind;
+pub var methods = [_]python.PyMethodDef{
     python.PyMethodDef{
         .ml_name = "upsample",
         .ml_meth = upsample_pybind,
         .ml_flags = python.METH_VARARGS,
         .ml_doc = "upsample a buffer",
     },
+    python.PyMethodDef{
+        .ml_name = "downsample",
+        .ml_meth = downsample_pybind,
+        .ml_flags = python.METH_VARARGS,
+        .ml_doc = "downsample a buffer",
+    },
+    python.PyMethodDef{
+        .ml_name = null,
+        .ml_meth = null,
+        .ml_flags = 0,
+        .ml_doc = null,
+    },
 };
 
-var module = python.PyModuleDef{
+pub var module = python.PyModuleDef{
     .m_base = python.PyModuleDef_Base{
         .ob_base = python.PyObject{
             .ob_refcnt = 1,
@@ -48,7 +45,3 @@ var module = python.PyModuleDef{
     .m_clear = null,
     .m_free = null,
 };
-
-pub export fn PyInit_mdc() callconv(.C) [*c]python.PyObject {
-    return python.PyModule_Create(&module);
-}
