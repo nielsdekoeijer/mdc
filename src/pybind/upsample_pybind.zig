@@ -9,8 +9,8 @@ pub const upsample = @import("upsample.zig").upsample;
 pub fn upsample_pybind(_: [*c]python.PyObject, args: [*c]python.PyObject) callconv(.C) ?*python.PyObject {
     // parse inputs
     var iBufferPython: [*c]python.PyObject = null;
-    var numDescriptions: usize = 0;
-    if (python.PyArg_ParseTuple(args, "On", &iBufferPython, &numDescriptions) == 0) {
+    var factor: usize = 0;
+    if (python.PyArg_ParseTuple(args, "On", &iBufferPython, &factor) == 0) {
         return null;
     }
 
@@ -20,7 +20,7 @@ pub fn upsample_pybind(_: [*c]python.PyObject, args: [*c]python.PyObject) callco
 
     // infer buffer sizes
     const iBufferSize: usize = @intCast(python.PyList_Size(iBufferPython));
-    const oBufferSize: usize = @intCast(numDescriptions * iBufferSize);
+    const oBufferSize: usize = @intCast(factor * iBufferSize);
 
     // allocate internal types
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -46,7 +46,7 @@ pub fn upsample_pybind(_: [*c]python.PyObject, args: [*c]python.PyObject) callco
         iBuffer[index] = python.PyFloat_AsDouble(python.PyList_GetItem(iBufferPython, @intCast(index)));
     }
 
-    upsample(iBuffer, oBuffer, numDescriptions);
+    upsample(iBuffer, oBuffer, factor);
 
     var oBufferPython = python.PyList_New(@intCast(oBufferSize));
     for (0..oBuffer.len) |index| {

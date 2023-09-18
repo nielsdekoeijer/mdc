@@ -4,8 +4,6 @@ const python = @cImport({
 });
 
 // TODO:
-// * finalize upsampler
-// * finalize downsampler
 // * arithmatic coder
 // * arithmatic decoder
 // * entropy coder

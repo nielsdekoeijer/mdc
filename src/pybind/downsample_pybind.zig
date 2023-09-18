@@ -10,7 +10,12 @@ pub fn downsample_pybind(_: [*c]python.PyObject, args: [*c]python.PyObject) call
     // parse inputs
     var iBufferPython: [*c]python.PyObject = null;
     var numDescriptions: usize = 0;
-    if (python.PyArg_ParseTuple(args, "On", &iBufferPython, &numDescriptions) == 0) {
+    if (python.PyArg_ParseTuple(
+        args,
+        "On",
+        &iBufferPython,
+        &numDescriptions,
+    ) == 0) {
         return null;
     }
 
